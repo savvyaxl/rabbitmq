@@ -1,8 +1,11 @@
-FROM docker.io/library/rabbitmq:3.13.5
+FROM docker.io/library/rabbitmq:3.13.7
 
 RUN rabbitmq-plugins enable --offline rabbitmq_management
 RUN rabbitmq-plugins enable --offline rabbitmq_mqtt
 COPY rabbitmq.conf /etc/rabbitmq/rabbitmq.conf
+COPY ca_certificate.pem /etc/rabbitmq/ca_certificate.pem
+COPY server_certificate.pem /etc/rabbitmq/server_certificate.pem
+COPY server_key.pem /etc/rabbitmq/server_key.pem
 COPY 99-management_agent.disable_metrics_collector.conf /etc/rabbitmq/conf.d
 
 EXPOSE 15671 15672
@@ -13,11 +16,11 @@ EXPOSE 1883
 # podman volume create -o device=/srv/rabbitmq/msg_stores -o=o=bind rabbitmq_data_vol
 # /var/lib/rabbitmq/mnesia/rabbit@my-rabbit/msg_stores
 
-# name='my-3.13.5' && podman run -d --rm --hostname my-rabbit --name my-rabbit -v rabbitmq_data_vol:/var/lib/rabbitmq/mnesia/rabbit@my-rabbit/msg_stores:Z --network host rabbitmq:${name}
-# name='my-3.13.5' && podman run -d --rm --hostname my-rabbit --name my-rabbit --network host rabbitmq:${name}
+# name='my-3.13.7' && podman run -d --rm --hostname my-rabbit --name my-rabbit -v rabbitmq_data_vol:/var/lib/rabbitmq/mnesia/rabbit@my-rabbit/msg_stores:Z --network host rabbitmq:${name}
+# name='my-3.13.7' && podman run -d --rm --hostname my-rabbit --name my-rabbit --network host rabbitmq:${name}
 
 # podman generate systemd --new --files --name my-rabbit
-# name='my-3.13.5' && podman build -f Containerfile_rabbitmq -t rabbitmq:${name} .
+# name='my-3.13.7' && podman build -f Containerfile_rabbitmq -t rabbitmq:${name} .
 # systemctl --user stop container-my-rabbit.service
 # systemctl --user start container-my-rabbit.service
 
